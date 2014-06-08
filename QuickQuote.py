@@ -1,6 +1,5 @@
 __author__ = 'claire'
 import string
-import sys
 import re
 import subprocess
 import zipfile
@@ -42,26 +41,24 @@ def binary2utf8(infile):
     return text
 
 
-def sentencecount(text):
+def segmentcount(text):
     splitter=re.compile('\r|\.\s|\?\s|!\s')
     #text= re.sub("^\d+\s|\s\d+\s|\s\d+$", " ", text)  # remove digits
     text= re.sub('\d','',text)
-    sentences=re.split(splitter,text)
-    sentences=[s for s in sentences if s!=''] #remove blanks
-    print 'no. of sentences:', len(sentences)
+    segments = re.split(splitter, text)
+    segments = [s for s in segments if s != '']  # remove blanks
+    return segments
 
 
 def wordcount(text):
-    exclude = set(string.punctuation)
-    text=text.replace('\r',' ')
-    x=''.join(ch for ch in text if ch not in exclude) #remove punctuation
-    #x= re.sub("^\d+\s|\s\d+\s|\s\d+$|\s\d+,\d+|\s\d+\.\d+", " ", x)  # remove digits
-    x= x.lower().split()
-    print 'no. of words:',len(x)
-    #print 'set of words:',len(set(x))
-
-    #print re.split('w')
-
+    '''
+    split text string into words
+    :param text: string of text
+    :return: list of words in text
+    '''
+    replace_punctuation = string.maketrans(string.punctuation, ' ' * len(string.punctuation))
+    text = text.translate(replace_punctuation)
+    return text.split()
 
 def parse_text(filename):
     """
@@ -72,17 +69,38 @@ def parse_text(filename):
     cmd="java -jar /Users/claire/Desktop/tika-app-1.5.jar --text "+filename
     p = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=True)
     output, errors = p.communicate()
+    print errors  #debug
     return output
 
 
-if __name__ == "__main__":
+def main(f):
+    '''
+    for testing
+    :param f: filename
+    :return: list of words and segments
+    '''
+    # file='test.txt'
+    #file=sys.argv[1]
+    file = os.path.abspath(f)
+    print file
+    text = parse_text(file)
+    print text
+    words = wordcount(text)
+    print 'no. of words:', len(words)
+    segments = segmentcount(text)
+    print 'no. of segments:', len(segments)
+    return words, segments
 
-    file='trados_test/trados_testing_6.docx'
+
+if __name__ == "__main__":
+    file = 'trados_test/trados_segment_test.docx'
     #file='test.txt'
     #file=sys.argv[1]
     file= os.path.abspath(file)
     print file
     text=parse_text(file)
     print text
-    wordcount(text)
-    sentencecount(text)
+    words = wordcount(text)
+    print 'no. of words:', len(words)
+    segments = segmentcount(text)
+    print 'no. of segments:', len(segments)
