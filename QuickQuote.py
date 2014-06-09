@@ -57,6 +57,19 @@ def main(f):
     return words, segments
 
 
+def quote(w, pair):
+    '''
+    return quote based on word count and language pair
+    ?currency
+    language pair lookup from an excel sheet (maybe)
+
+    :param w: words
+    :param pair: rate
+    :return: quote
+    '''
+    pass
+
+
 if __name__ == "__main__":
     file = 'trados_test/trados_segment_test.docx'
     # file='test.txt'
@@ -69,3 +82,6 @@ if __name__ == "__main__":
     print 'no. of words:', len(words)
     segments = segmentcount(text)
     print 'no. of segments:', len(segments)
+
+
+    # TODO read rates from file
